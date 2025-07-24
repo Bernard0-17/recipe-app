@@ -3,7 +3,7 @@
 // CRUD = Create Read Update Delete
 
 // Criar uma conexão à base dados
-$conn = mysqli_connect('127.0.0.1', 'root', '', 'projecto_final');
+$conn = mysqli_connect('127.0.0.1', 'root', '', '5425_bernardo');
 
 //verificar se a conexão foi concluida
 if ($conn) {
