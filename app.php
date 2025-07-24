@@ -19,6 +19,11 @@ function menu() {
     echo "2 - Listar todas as receitas\n";
     echo "3 - Atualizar receita\n";
     echo "4 - Apagar receita\n";
+    echo "5 - Criar nova categoria\n";
+    echo "6 - Listar todas as categorias\n";
+    echo "7 - Associar receita a uma categoria\n";
+    echo "8 - Desassociar receita a uma categoria\n";
+    echo "9 - Listar receitas por categoria\n";
     echo "0 - Sair\n";
     $option = readline("Escolha uma opção: ");
     return $option;
@@ -109,6 +114,83 @@ function apagarReceita($conn) {
 }
 
 
+//função para criar categoria
+function criarCategoria($conn) {
+    $nome = readline("Nome da nova categoria: ");
+    $sql = "INSERT INTO Categoria (nome) VALUES ('$nome')";
+    if (mysqli_query($conn, $sql)) {
+        echo "Categoria criada com sucesso!\n";
+    } else {
+        echo "Erro ao criar categoria: " . mysqli_error($conn) . "\n";
+    }
+}
+
+
+//função para listar as categorias
+function listarCategorias($conn) {
+    $sql = "SELECT * FROM Categoria";
+    $result = mysqli_query($conn, $sql);
+
+    echo "\n--- Categorias ---\n";
+    while ($linha = mysqli_fetch_assoc($result)) {
+        echo "ID: " . $linha['id'] . " - Nome: " . $linha['nome'] . "\n";
+    }
+}
+
+
+//função para associar as receitas a uma categoria
+function associarReceitaCategoria($conn) {
+    $id_receita = readline("ID da receita: ");
+    $id_categoria = readline("ID da categoria: ");
+
+    $sql = "INSERT INTO Receita_Categoria (id_receita, id_categoria) VALUES ('$id_receita', '$id_categoria')";
+    if (mysqli_query($conn, $sql)) {
+        echo "Associação realizada com sucesso!\n";
+    } else {
+        echo "Erro ao associar: " . mysqli_error($conn) . "\n";
+    }
+}
+
+
+//função para desassociar uma receita a uma categoria
+function desassociarReceitaCategoria($conn) {
+    $id_receita = readline("ID da receita: ");
+    $id_categoria = readline("ID da categoria: ");
+
+    $sql = "DELETE FROM Receita_Categoria WHERE id_receita = '$id_receita' AND id_categoria = '$id_categoria'";
+    if (mysqli_query($conn, $sql)) {
+        echo "Desassociação realizada com sucesso!\n";
+    } else {
+        echo "Erro ao desassociar: " . mysqli_error($conn) . "\n";
+    }
+}
+
+
+//função para listar as receitas por categoria
+function listarReceitasPorCategoria($conn) {
+    $id_categoria = readline("ID da categoria: ");
+
+    $sql = "
+        SELECT Receita.id, Receita.nome, Receita.descricao
+        FROM Receita
+        JOIN Receita_Categoria ON Receita.id = Receita_Categoria.id_receita
+        WHERE Receita_Categoria.id_categoria = '$id_categoria'
+    ";
+
+    $result = mysqli_query($conn, $sql);
+
+    echo "\n--- Receitas na Categoria ---\n";
+    while ($linha = mysqli_fetch_assoc($result)) {
+        echo "ID: " . $linha['id'] . "\n";
+        echo "Nome: " . $linha['nome'] . "\n";
+        echo "Descrição: " . $linha['descricao'] . "\n";
+        echo "------------------------\n";
+    }
+}
+
+
+
+
 do {
     $menu = menu();
 
@@ -124,6 +206,21 @@ do {
             break;
         case '4':
             apagarReceita($conn);
+            break;
+        case '5':
+            criarCategoria($conn);
+            break;
+        case '6':
+            listarCategorias($conn);
+            break;
+        case '7':
+            associarReceitaCategoria($conn);
+            break;
+        case '8':
+            desassociarReceitaCategoria($conn);
+            break;
+        case '9':
+            listarReceitasPorCategoria($conn);
             break;
         case '0':
             echo "Sair.\n";
